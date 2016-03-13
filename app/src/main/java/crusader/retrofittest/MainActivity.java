@@ -1,8 +1,8 @@
 package crusader.retrofittest;
 
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,7 +13,6 @@ import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,6 +30,9 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
     RecyclerView rv_prodPreview;
     private MyAdapter mAdapter;
     RetriveByKeyWord myDataset;
+
+    int currentPageCount = 0;
+    int totalPageCount = 0;
 
     private EndlessRecyclerViewAdapter endlessRecyclerViewAdapter;
 
@@ -79,24 +81,36 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
         map.put("RESPONSE-DATA-FORMAT", "JSON");
         map.put("REST-PAYLOAD", "");
         try {
-            map.put("keywords", URLEncoder.encode("Nike shoes","utf-8"));
+            map.put("keywords", URLEncoder.encode("Harry Potter","utf-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         map.put("paginationInput.entriesPerPage", "10");
+        map.put("paginationInput.pageNumber", String.valueOf(currentPageCount + 1));
         return map;
     }
 
     @Override
     public void onResponse(Response<RetriveByKeyWord> response, Retrofit retrofit) {
         myDataset = response.body();
-        mAdapter = new MyAdapter(this, myDataset.getFindItemsByKeywordsResponse().get(0).getSearchResult());
+        if(mAdapter == null) {
+            mAdapter = new MyAdapter(this, myDataset.getFindItemsByKeywordsResponse().get(0).getSearchResult());
 //        rv_prodPreview.setAdapter(mAdapter);
 
-        /**Endless ADapter**/
-        endlessRecyclerViewAdapter = new EndlessRecyclerViewAdapter(this, mAdapter, this);
-        rv_prodPreview.setAdapter(endlessRecyclerViewAdapter);
-        /********************/
+            /**Endless ADapter**/
+            endlessRecyclerViewAdapter = new EndlessRecyclerViewAdapter(this, mAdapter, this);
+            rv_prodPreview.setAdapter(endlessRecyclerViewAdapter);
+            /********************/
+        }
+        totalPageCount = Integer.valueOf(myDataset.getFindItemsByKeywordsResponse().get(0).getPaginationOutput().get(0).getTotalPages().get(0));
+        currentPageCount = Integer.valueOf(myDataset.getFindItemsByKeywordsResponse().get(0).getPaginationOutput().get(0).getPageNumber().get(0));
+
+        if(currentPageCount >= totalPageCount){
+            endlessRecyclerViewAdapter.onDataReady(false);
+        }else{
+            // notify the data is ready
+            endlessRecyclerViewAdapter.onDataReady(true);
+        }
 
         String responsetxt = new Gson().toJson(response);
         Log.d("CRUSADER", responsetxt);
@@ -112,19 +126,26 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
         new AsyncTask<Void, Void, List>() {
             @Override
             protected List doInBackground(Void... params) {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    Thread.sleep(200);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
                 return null;
             }
 
             @Override
             protected void onPostExecute(List list) {
-                mAdapter.appendItems(myDataset.getFindItemsByKeywordsResponse().get(0).getSearchResult());
-                    // notify the data is ready
-                    endlessRecyclerViewAdapter.onDataReady(true);
+                if(currentPageCount > 1) {
+                    mAdapter.appendItems(myDataset.getFindItemsByKeywordsResponse().get(0).getSearchResult());
+                }
+                makeApiCall();
+//                if(currentPageCount >= totalPageCount){
+//                    endlessRecyclerViewAdapter.onDataReady(false);
+//                }else{
+//                    // notify the data is ready
+//                    endlessRecyclerViewAdapter.onDataReady(true);
+//                }
             }
         }.execute();
     }

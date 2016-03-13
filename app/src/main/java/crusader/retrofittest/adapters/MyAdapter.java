@@ -54,9 +54,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         if(mDataset != null) {
             holder.txt_product_name.setText(mDataset.get(0).getItem().get(position).getTitle().get(0));
             holder.txt_product_price.setText(mDataset.get(0).getItem().get(position).getSellingStatus().get(0).getCurrentPrice().get(0).getCurrencyId() + " " + mDataset.get(0).getItem().get(position).getSellingStatus().get(0).getCurrentPrice().get(0).getValue());
-            Picasso.with(context)
-                    .load(mDataset.get(0).getItem().get(position).getGalleryURL().get(0))
-                    .into(holder.img_prod_snap);
+            if(mDataset.get(0).getItem().get(position).getGalleryURL().size() > 0) {
+                Picasso.with(context)
+                        .load(mDataset.get(0).getItem().get(position).getGalleryURL().get(0))
+                        .into(holder.img_prod_snap);
+            }else{
+                Picasso.with(context)
+                        .load(R.mipmap.ic_launcher)
+                        .into(holder.img_prod_snap);
+            }
         }
     }
 
