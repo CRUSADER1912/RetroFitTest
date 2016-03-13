@@ -5,7 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
@@ -25,7 +29,7 @@ import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 
-public class MainActivity extends AppCompatActivity implements Callback<RetriveByKeyWord> , EndlessRecyclerViewAdapter.RequestToLoadMoreListener {
+public class MainActivity extends AppCompatActivity implements Callback<RetriveByKeyWord>, EndlessRecyclerViewAdapter.RequestToLoadMoreListener, View.OnClickListener {
 
     RecyclerView rv_prodPreview;
     private MyAdapter mAdapter;
@@ -33,6 +37,11 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
 
     int currentPageCount = 0;
     int totalPageCount = 0;
+
+    EditText edtSearch;
+    Button btnSearch;
+
+    String searchTerm = "";
 
     private EndlessRecyclerViewAdapter endlessRecyclerViewAdapter;
 
@@ -43,16 +52,21 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
 
         initComponents();
 
-        makeApiCall();
+        makeApiCall(searchTerm);
     }
 
     private void initComponents() {
         rv_prodPreview = (RecyclerView) findViewById(R.id.rv_detail_list);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rv_prodPreview.setLayoutManager(llm);
+
+        edtSearch = (EditText) findViewById(R.id.edt_search_term);
+        btnSearch = (Button) findViewById(R.id.btn_search);
+
+        btnSearch.setOnClickListener(this);
     }
 
-    private void makeApiCall() {
+    private void makeApiCall(String searchTerm) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 // set your desired log level
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -68,11 +82,11 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
                 .client(httpClient)
                 .build();
         RetroApi api = retrofit.create(RetroApi.class);
-        Call<RetriveByKeyWord> call = api.getProducts(getDataMap());
+        Call<RetriveByKeyWord> call = api.getProducts(getDataMap(searchTerm));
         call.enqueue(this);
     }
 
-    private HashMap getDataMap() {
+    private HashMap getDataMap(String searchTerm) {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("OPERATION-NAME", "findItemsByKeywords");
         map.put("SERVICE-VERSION", "1.0.0");
@@ -81,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
         map.put("RESPONSE-DATA-FORMAT", "JSON");
         map.put("REST-PAYLOAD", "");
         try {
-            map.put("keywords", URLEncoder.encode("Harry Potter","utf-8"));
+            map.put("keywords", URLEncoder.encode("Nike " + searchTerm, "utf-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -93,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
     @Override
     public void onResponse(Response<RetriveByKeyWord> response, Retrofit retrofit) {
         myDataset = response.body();
-        if(mAdapter == null) {
+        if (mAdapter == null) {
             mAdapter = new MyAdapter(this, myDataset.getFindItemsByKeywordsResponse().get(0).getSearchResult());
 //        rv_prodPreview.setAdapter(mAdapter);
 
@@ -105,9 +119,9 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
         totalPageCount = Integer.valueOf(myDataset.getFindItemsByKeywordsResponse().get(0).getPaginationOutput().get(0).getTotalPages().get(0));
         currentPageCount = Integer.valueOf(myDataset.getFindItemsByKeywordsResponse().get(0).getPaginationOutput().get(0).getPageNumber().get(0));
 
-        if(currentPageCount >= totalPageCount){
+        if (currentPageCount >= totalPageCount) {
             endlessRecyclerViewAdapter.onDataReady(false);
-        }else{
+        } else {
             // notify the data is ready
             endlessRecyclerViewAdapter.onDataReady(true);
         }
@@ -136,10 +150,10 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
 
             @Override
             protected void onPostExecute(List list) {
-                if(currentPageCount > 1) {
+                if (currentPageCount > 1) {
                     mAdapter.appendItems(myDataset.getFindItemsByKeywordsResponse().get(0).getSearchResult());
                 }
-                makeApiCall();
+                makeApiCall(searchTerm);
 //                if(currentPageCount >= totalPageCount){
 //                    endlessRecyclerViewAdapter.onDataReady(false);
 //                }else{
@@ -148,5 +162,26 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
 //                }
             }
         }.execute();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_search:
+                if (!TextUtils.isEmpty(edtSearch.getText().toString())) {
+                    searchTerm = edtSearch.getText().toString();
+                    resetPageCounter();
+                    makeApiCall(searchTerm);
+                } else {
+                    edtSearch.setError(getString(R.string.txt_empty_search_term));
+                }
+                break;
+        }
+    }
+
+    private void resetPageCounter() {
+        currentPageCount = 0;
+        totalPageCount = 0;
+        mAdapter = null;
     }
 }

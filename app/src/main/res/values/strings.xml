@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">RetroFitTest</string>
     <string name="ebay_appid_production">LinusSal-447e-417b-aa35-aa397a81025f</string>
+    <string name="txt_go">GO</string>
+    <string name="txt_empty_search_term">Please add search term</string>
 </resources>

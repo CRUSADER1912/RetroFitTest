@@ -9,9 +9,26 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="crusader.retrofittest.MainActivity">
 
+    <EditText
+        android:id="@+id/edt_search_term"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="5dp"
+        android:layout_toLeftOf="@+id/btn_search"
+        android:drawableLeft="@mipmap/ic_launcher" />
+
+    <Button
+        android:id="@+id/btn_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/edt_search_term"
+        android:layout_alignParentRight="true"
+        android:text="@string/txt_go" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_detail_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        android:layout_below="@id/edt_search_term" />
 </RelativeLayout>
