@@ -8,4 +8,7 @@
     <string name="txt_login">Login</string>
     <string name="txt_register">Register</string>
     <string name="txt_forgot_password">Forgot Password</string>
+    <string name="txt_already_a_member_login">Already a member? Login</string>
+    <string name="txt_create_account">Create Account</string>
+    <string name="txt_address">Address</string>
 </resources>

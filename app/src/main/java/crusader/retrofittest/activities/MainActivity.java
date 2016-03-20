@@ -1,8 +1,7 @@
-package crusader.retrofittest;
+package crusader.retrofittest.activities;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -20,6 +19,9 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 
+import crusader.retrofittest.AppConstants;
+import crusader.retrofittest.R;
+import crusader.retrofittest.RetroApi;
 import crusader.retrofittest.adapters.EndlessRecyclerViewAdapter;
 import crusader.retrofittest.adapters.MyAdapter;
 import crusader.retrofittest.models.RetriveByKeyWord;
@@ -29,7 +31,7 @@ import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 
-public class MainActivity extends AppCompatActivity implements Callback<RetriveByKeyWord>, EndlessRecyclerViewAdapter.RequestToLoadMoreListener, View.OnClickListener {
+public class MainActivity extends BaseActivity implements Callback<RetriveByKeyWord>, EndlessRecyclerViewAdapter.RequestToLoadMoreListener, View.OnClickListener {
 
     RecyclerView rv_prodPreview;
     private MyAdapter mAdapter;
@@ -48,21 +50,26 @@ public class MainActivity extends AppCompatActivity implements Callback<RetriveB
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        initComponents();
-
         makeApiCall(searchTerm);
     }
 
-    private void initComponents() {
+    @Override
+    public void initSetContentView() {
+        setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    public void initComponents() {
         rv_prodPreview = (RecyclerView) findViewById(R.id.rv_detail_list);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rv_prodPreview.setLayoutManager(llm);
 
         edtSearch = (EditText) findViewById(R.id.edt_search_term);
         btnSearch = (Button) findViewById(R.id.btn_search);
+    }
 
+    @Override
+    public void initListeners() {
         btnSearch.setOnClickListener(this);
     }
 
