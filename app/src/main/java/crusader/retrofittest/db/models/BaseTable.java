@@ -29,5 +29,5 @@ public abstract class BaseTable<T> {
 
     public abstract boolean updateData(SQLiteDatabase db, T tableModel);
 
-    public abstract Integer deleteContact (SQLiteDatabase db, T tableModel);
+    public abstract Integer deleteData(SQLiteDatabase db, T tableModel);
 }

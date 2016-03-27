@@ -1,6 +1,7 @@
 package crusader.retrofittest.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +13,10 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import crusader.retrofittest.AppConstants;
 import crusader.retrofittest.R;
-import crusader.retrofittest.models.SearchResult;
+import crusader.retrofittest.activities.ProductDetailActivity;
+import crusader.retrofittest.models.retriveByKeyword.SearchResult;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private List<SearchResult> mDataset;
@@ -50,7 +53,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         if(mDataset != null) {
             holder.txt_product_name.setText(mDataset.get(0).getItem().get(position).getTitle().get(0));
             holder.txt_product_price.setText(mDataset.get(0).getItem().get(position).getSellingStatus().get(0).getCurrentPrice().get(0).getCurrencyId() + " " + mDataset.get(0).getItem().get(position).getSellingStatus().get(0).getCurrentPrice().get(0).getValue());
@@ -63,6 +66,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                         .load(R.mipmap.ic_launcher)
                         .into(holder.img_prod_snap);
             }
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(context, ProductDetailActivity.class);
+                    i.putExtra(AppConstants.ITEMID, mDataset.get(0).getItem().get(position).getItemId().get(0));
+                    i.putExtra(AppConstants.ITEMTITLE, mDataset.get(0).getItem().get(position).getTitle().get(0));
+//                    ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this, Pair.create((View) mFabButton, "fab"), Pair.create(appIcon, "appIcon"));
+                    context.startActivity(i);
+                }
+            });
         }
     }
 

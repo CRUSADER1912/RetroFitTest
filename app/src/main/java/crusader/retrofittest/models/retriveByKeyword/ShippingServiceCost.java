@@ -1,4 +1,4 @@
-package crusader.retrofittest.models;
+package crusader.retrofittest.models.retriveByKeyword;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

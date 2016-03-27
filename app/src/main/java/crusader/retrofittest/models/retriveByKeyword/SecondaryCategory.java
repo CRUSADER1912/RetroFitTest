@@ -1,11 +1,12 @@
-package crusader.retrofittest.models;
+package crusader.retrofittest.models.retriveByKeyword;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class PrimaryCategory {
+import java.util.ArrayList;
+import java.util.List;
+
+public class SecondaryCategory {
 
 @SerializedName("categoryId")
 @Expose

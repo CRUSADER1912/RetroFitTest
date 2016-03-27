@@ -24,7 +24,7 @@ import crusader.retrofittest.R;
 import crusader.retrofittest.RetroApi;
 import crusader.retrofittest.adapters.EndlessRecyclerViewAdapter;
 import crusader.retrofittest.adapters.MyAdapter;
-import crusader.retrofittest.models.RetriveByKeyWord;
+import crusader.retrofittest.models.retriveByKeyword.RetriveByKeyWord;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;

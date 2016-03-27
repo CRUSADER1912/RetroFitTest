@@ -168,7 +168,7 @@ public class UserRegistration extends BaseTable<UserRegistration> {
     }
 
     @Override
-    public Integer deleteContact(SQLiteDatabase db, UserRegistration tableModel) {
+    public Integer deleteData(SQLiteDatabase db, UserRegistration tableModel) {
             return db.delete(getTableName(),
                     REGISTRATION_COLUMN_USERNAME + " = ? ",
                     new String[] { tableModel.getUserName() });
